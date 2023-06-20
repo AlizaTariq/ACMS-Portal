@@ -46,6 +46,8 @@ dbModel= DatabaseModel(app.config["DATABASE"],app.config["DB_USER"],
 #dbModel.getTeacherFeedbackList()
 
 #dbModel.SendReqforDuty(1);
+dbModel.getRdYear(1121)
+dbModel.getRoadMapId('2016','cs','CMP-100')
 
 #Login Admin Function
 @app.route('/loginData', methods=['POST','GET'])
@@ -265,7 +267,15 @@ def sendPracticalDuty():
 
     print("CollegeId is : ",collegeId)
     pracId=dbModel.getPracticalDutyId(collegeId,dept,course[0])
-    dbModel.savePracticalDuty(pracId,examiner[3],moreInfo)
+    rdYear=dbModel.getRdYear(pracId)
+
+    print("Pract ID--- ",rdYear)
+    print("Pract ID--- ",dept)
+    print("Pract info--- ",course[0])
+
+    rdId=dbModel.getRoadMapId(rdYear,dept,course[0])
+
+    dbModel.savePracticalDuty(pracId,examiner[3],moreInfo,rdId)
 
     
     userdata = {

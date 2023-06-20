@@ -686,15 +686,16 @@ class DatabaseModel:
                 cursor.close()
 
     # Update Practical Duty
-    def savePracticalDuty(self, practDutyId, examinerId, moreInfo):
+    def savePracticalDuty(self, practDutyId, examinerId, moreInfo,rdId):
         try:
             if self.connection != None:
                 cursor = self.connection.cursor()
                 date1 = datetime.date.today()
                 query = "UPDATE public.practical_duty"\
-                    " SET prac_duty_status=1, prac_ntf_status=1, examiner_id=%s, prac_ass_date=%s,prac_info=%s "\
+                    " SET prac_duty_status=1, prac_ntf_status=1, examiner_id=%s, "\
+                   " prac_ass_date=%s,prac_info=%s,rd_id=%s "\
                     " WHERE prac_duty_id=%s;"
-                args = (examinerId, date1, moreInfo, practDutyId)
+                args = (examinerId, date1, moreInfo, rdId,practDutyId)
                 cursor.execute(query, args)
                 self.connection.commit()
 
@@ -967,6 +968,44 @@ class DatabaseModel:
 
         except Exception as e:
             print("Exception in getDeptCount", str(e))
+        finally:
+            if cursor != None:
+                cursor.close()
+
+
+    def getRdYear(self,pracId):
+        try:
+            print("\n\nIn get pracId")
+            if self.connection != None:
+                cursor = self.connection.cursor()
+                query = "select rd_year from practical_duty where prac_duty_id=%s;"
+                args = (pracId,)
+                cursor.execute(query,args)
+                pracId1 = cursor.fetchall()
+                print(pracId1[0][0])
+                return pracId1[0][0]
+
+        except Exception as e:
+            print("Exception in pract Id", str(e))
+        finally:
+            if cursor != None:
+                cursor.close()
+
+
+    def getRoadMapId(self,rdYear,dept1,crsCode):
+        try:
+            print("\n\nIn get RoadMapId")
+            if self.connection != None:
+                cursor = self.connection.cursor()
+                query = "select rd_id from roadmap where rd_year=%s and rd_crs_code=%s and rd_dept=%s;"
+                args = (rdYear,crsCode,dept1)
+                cursor.execute(query,args)
+                rdId = cursor.fetchall()
+                print(rdId[0][0])
+                return rdId[0][0]
+
+        except Exception as e:
+            print("Exception in RoadMap Id", str(e))
         finally:
             if cursor != None:
                 cursor.close()
