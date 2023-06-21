@@ -686,16 +686,15 @@ class DatabaseModel:
                 cursor.close()
 
     # Update Practical Duty
-    def savePracticalDuty(self, practDutyId, examinerId, moreInfo,rdId):
+    def savePracticalDuty(self, practDutyId, examinerId, moreInfo):
         try:
             if self.connection != None:
                 cursor = self.connection.cursor()
                 date1 = datetime.date.today()
                 query = "UPDATE public.practical_duty"\
-                    " SET prac_duty_status=1, prac_ntf_status=1, examiner_id=%s, "\
-                   " prac_ass_date=%s,prac_info=%s,rd_id=%s "\
+                    " SET prac_duty_status=1, prac_ntf_status=1, examiner_id=%s, prac_ass_date=%s,prac_info=%s "\
                     " WHERE prac_duty_id=%s;"
-                args = (examinerId, date1, moreInfo, rdId,practDutyId)
+                args = (examinerId, date1, moreInfo, practDutyId)
                 cursor.execute(query, args)
                 self.connection.commit()
 
@@ -972,44 +971,6 @@ class DatabaseModel:
             if cursor != None:
                 cursor.close()
 
-
-    def getRdYear(self,pracId):
-        try:
-            print("\n\nIn get pracId")
-            if self.connection != None:
-                cursor = self.connection.cursor()
-                query = "select rd_year from practical_duty where prac_duty_id=%s;"
-                args = (pracId,)
-                cursor.execute(query,args)
-                pracId1 = cursor.fetchall()
-                print(pracId1[0][0])
-                return pracId1[0][0]
-
-        except Exception as e:
-            print("Exception in pract Id", str(e))
-        finally:
-            if cursor != None:
-                cursor.close()
-
-
-    def getRoadMapId(self,rdYear,dept1,crsCode):
-        try:
-            print("\n\nIn get RoadMapId")
-            if self.connection != None:
-                cursor = self.connection.cursor()
-                query = "select rd_id from roadmap where rd_year=%s and rd_crs_code=%s and rd_dept=%s;"
-                args = (rdYear,crsCode,dept1)
-                cursor.execute(query,args)
-                rdId = cursor.fetchall()
-                print(rdId[0][0])
-                return rdId[0][0]
-
-        except Exception as e:
-            print("Exception in RoadMap Id", str(e))
-        finally:
-            if cursor != None:
-                cursor.close()
-
     ############################################ 3###################################
 
 # Get Exam Duty of based on its types assigned, not assigned or rejected.
@@ -1125,10 +1086,10 @@ class DatabaseModel:
                 cursor = self.connection.cursor()
                 # exam_id=List[0], rd_id = List[4],rd_dept=List[2],rd_year=List[3]
                 deadline = datetime.date.today() + datetime.timedelta(days=15)
-                query = "UPDATE exam_duty SET status_req = 1, request_date = %s, paper_upload_deadline = %s, result_upload_deadline = %s WHERE exam_duty_id = %s;"
+                query = "UPDATE exam_duty SET status_req = 1, request_date = %s, paper_upload_deadline = %s, result_upload_deadline = %s, paper_date=%s WHERE exam_duty_id = %s;"
                 # duty_status =  0 for notAssigned, 1 for assigned, 2 for accepted, 3 for rejected
                 args = (datetime.date.today(), (datetime.date.today() + datetime.timedelta(
-                    days=30)), (datetime.date.today() + datetime.timedelta(days=35)), id)
+                    days=30)), (datetime.date.today() + datetime.timedelta(days=35)), (datetime.date.today() + datetime.timedelta(days=40)), id)
                 cursor.execute(query, args)
                 self.connection.commit()
                 self.SendReqforDuty(id)
